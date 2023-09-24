@@ -1,3 +1,6 @@
+# 阅读记录
+[上次阅读记录](./doc_cn/trpl-zh-cn/ch05-02-example-structs.html)
+
 # 逻辑结构
 
 - if...
