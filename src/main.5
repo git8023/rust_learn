@@ -1,0 +1,67 @@
+///
+/// 结构体
+///
+// ---
+//
+// ///
+// /// 用户
+// ///
+// #[derive(Debug)]
+// struct User {
+//     uname: String,
+//     email: String,
+//     age: u32,
+// }
+//
+//
+// // -------------------
+// fn main() {
+//     let mut user = User {
+//         uname: String::from("Mari"),
+//         email: String::from("abc@d.e"),
+//         age: 18,
+//     };
+//     println!("user: {:?}", user);
+//     user.age = 19;  // 要修改结构体字段值, 整个结构体必须是可变的
+//
+//     println!("----");
+//     let mut u2 = build_user(
+//         String::from("Xlin"),
+//         String::from("aaa@bb.cc"),
+//     );
+//     println!("u2: {:?}", u2);
+//     u2.age = 20;
+//     println!("u2: {:?}", u2);
+//     println!("----结构体更新");
+//
+//     let u3 = User {
+//         uname: String::from("Abbo"),
+//         ..u2        // <<----------------------+
+//     };                                     //  ^
+//     println!("u3: {:?}", u3);              //  |
+//     println!("u2.uname: {}", u2.uname);    //  |
+//     // println!("u2.email: {}", u2.email); // ue.email移交到u3.email中, 因此u2.email不可用
+// }
+//
+// fn build_user(uname: String, email: String) -> User {
+//     User {
+//         uname,
+//         email,
+//         age: 18,
+//     }
+// }
+
+struct Color(i32, i32, i32);
+
+struct Point(i32, i32, i32);
+
+fn main() {
+    let c = Color(10, 20, 30);
+    let p = Point(11, 22, 33);
+    // use_tuple(c);                        // error! 类型不服
+    use_tuple((c.0, c.1, c.2));          // 解开后使用
+}
+
+fn use_tuple(x: (i32, i32, i32)) {
+    println!("x: {:?}", x);
+}

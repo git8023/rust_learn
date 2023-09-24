@@ -1,0 +1,69 @@
+///
+/// 移交所有权
+///
+// fn main() {
+//     let s = String::from("Hello");
+//     let s2 = use_s(s); // 转移所有权, 变量s在此之后失效
+//     println!("main s: {}", s2);
+// }
+//
+// fn use_s(s: String) -> String {
+//     println!("Use s: {}", s);
+//     s    // 移交所有权, 变量s在此之后失效
+// }
+//
+
+///
+/// - 不可变借用
+/// - 可变借用
+/// - 可变借用在相同作用域中不能同时存在多个
+/// - 可变/不可变借用在相同作用域中不能同时存在
+/// - 不可变借用可以存在任意多个
+///
+// fn main() {
+//     let s = String::from("hello");
+//     use_ref_s(&s);          // 仅传递引用 &s, 不移交所有权
+//     println!("s: {s}");     // 这里任然可以使用s
+//
+//     println!("----");
+//     let mut s2 = String::from("hello");
+//     let s3: &mut String = &mut s2;
+//     // let s4: &mut String = &mut s2;      // 可变借用不能同时存在一个以上
+//     // let im_s5 = &s2;               // 可变/不可变借用不能同时存在
+//
+//     use_mut_borrow(s3);                 // 可变借用变量自身必须是可变的
+//     let s4 = &mut s2;
+//     use_mut_borrow(s4);
+//     println!("s2: {}", s2);
+// }
+//
+// fn use_ref_s(s: &String) {  // 仅接受引用, 不获取所有权
+//     // Cannot borrow immutable local variable `s` as mutable
+//     // 不可变借用不可修改值
+//     // - 可变借用定义: &mut
+//     // s.push_str(", world");
+//
+//     println!("s:{}, len:{}", s, s.len());
+// } // s离开作用域, 不释放内存(因为只是引用)
+//
+// fn use_mut_borrow(s: &mut String) { // 可变借用, 可修改参数值
+//     println!("old s:{}", s);
+//     s.push_str(", world");
+//     println!("new s: {}", s);
+// }
+
+///
+/// - 悬垂借用
+///
+// fn main() {
+//     let s = gives_ref();
+//     println!("s: {}", s);
+// }
+//
+// ///
+// ///  this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+// ///
+// fn gives_ref() -> &String {
+//     let s = String::from("hello");
+//     &s  // s的借用在这里被返回
+// } // s在这里被释放

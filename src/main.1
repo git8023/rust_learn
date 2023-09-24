@@ -1,0 +1,133 @@
+use std::io;
+
+fn main() {
+    // let x = (500, 6.4, 1);
+    // let a = [1, 2, 3];
+    // let a1: [i32; 3] = [1, 2, 3];
+
+    // let a2 = [3; 5];
+    // println!("{:?}", a2);
+    // // println!("{}", a2[10]);
+
+    // other_function(5);
+
+    // let y = {
+    //     let x = 3;
+    //     x + 1
+    // };
+    // println!("The value of y is: {y}");
+
+    // 任意函数都有返回值, 默认返回空元组 "()"
+    // fn five() -> i32 { 5 }
+    // let x = five();
+    // println!("The value of x is: {x}");
+    // fn non_return() {}
+    // let y = non_return();
+    // println!("Y: {:?}", y);
+
+    // // if后面没有括号
+    // let number = 3;
+    // if number < 5 {
+    //     println!("Condition was true");
+    // } else {
+    //     println!("Condition was false");
+    // }
+    //
+    // // let...if...
+    // // rust 没有三元运算, 使用 if...else... 表达式代替
+    // // if...else... 表达式返回的类型必须相同
+    // let condition = true;
+    // let number = if condition { 5 } else { 6 };
+    // println!("The Value of number is: {number}");
+
+    // rust三种循环 loop, while, for
+    // 循环表达式中可以使用 break 返回处理结果
+    // - break false;
+    // // loop无限循环
+    // let mut counter = 0;
+    // let result = loop {
+    //     counter += 1;
+    //     if counter == 10 {
+    //         break counter * 2;
+    //     }
+    // };
+    // println!("Result: {result}");
+    //
+    // // 循环标签, 消除多重循环歧义
+    // // - 使用单引号标签名:
+    // // - 'label_name:loop
+    // // - break 'label_name;
+    // let mut count = 0;
+    // 'counting_up: loop {
+    //     println!("count = {count}");
+    //     let mut remaining = 10;
+    //     loop {
+    //         println!("remaining = {remaining}");
+    //         if remaining == 9 {
+    //             // 跳出内部循环
+    //             break;
+    //         }
+    //         if count == 2 {
+    //             // 跳出外部循环
+    //             break 'counting_up;
+    //         }
+    //         remaining -= 1;
+    //     }
+    //     count += 1;
+    // }
+    // println!("End count = {count}");
+    //
+    // // while 循环
+    // let mut number = 3;
+    // while number != 0 {
+    //     println!("{number}");
+    //     number -= 1;
+    // };
+    // println!("LIFTOFF!!");
+    //
+    // for循环
+    // let a = [10, 20, 30, 40, 50];
+    // for el in a {
+    //     println!("The value is: {el}");
+    // }
+    // for num in (1..4).rev() {
+    //     println!("{num}");
+    // }
+    // println!("LIFTOFF!!");
+    c_f_transfer();
+}
+
+// fn other_function(x: i32) {
+//     println!("The value of x is: {x}");
+// }
+
+fn c_f_transfer() {
+    println!("请选择:
+    1. ℃ -> ℉
+    2. ℉ -> ℃");
+
+    let mut opt = String::new();
+    io::stdin().read_line(&mut opt).unwrap();
+    let opt = opt.trim().parse::<i32>().unwrap();
+
+    if 1 == opt {
+        println!("请输入温度(℃):");
+        let mut c_val = String::new();
+        io::stdin().read_line(&mut c_val).unwrap();
+        let c_val = c_val.trim().parse::<i32>().unwrap();
+
+        let f_val = 32f64 + c_val as f64 * 1.8;
+        println!("华氏度(℉): {f_val}");
+        return;
+    }
+
+    if 2 == opt {
+        println!("请输入温度(℉):");
+        let mut f_val = String::new();
+        io::stdin().read_line(&mut f_val).unwrap();
+        let f_val = f_val.trim().parse::<i32>().unwrap();
+
+        let c_val = (f_val - 32) as f64 / 1.8f64;
+        println!("摄氏度(℃): {c_val}");
+    }
+}
