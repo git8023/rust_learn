@@ -308,25 +308,25 @@
     *v += 10;
   }
   ```
-- 使用枚举泛型使集合保存不同数据类型
-  ```rust
-  #[derive(Debug)]
-  enum SpreadsheetCell {
-      Int(i32),
-      Float(f64),
-      Text(String),
-  }
+  - 使用枚举泛型使集合保存不同数据类型
+    ```rust
+    #[derive(Debug)]
+    enum SpreadsheetCell {
+        Int(i32),
+        Float(f64),
+        Text(String),
+    }
 
-  fn use_enum_save_more_types() {
-      println!("\n---> use_enum_save_more_types");
-      let v = vec![
-          SpreadsheetCell::Int(3),
-          SpreadsheetCell::Float(10.12),
-          SpreadsheetCell::Text(String::from("blue")),
-      ];
-      println!("vec: {:?}", v);
-  }
-  ```
+    fn use_enum_save_more_types() {
+        println!("\n---> use_enum_save_more_types");
+        let v = vec![
+            SpreadsheetCell::Int(3),
+            SpreadsheetCell::Float(10.12),
+            SpreadsheetCell::Text(String::from("blue")),
+        ];
+        println!("vec: {:?}", v);
+    }
+    ```
 
 - 字符串 `String`
   - 字符串类型  
@@ -377,4 +377,44 @@
     1. `push()`/`push_str()`
     2. `+`(`Add Trait`), `&String`可以强转为`&str`
     3. `format!`不获取所有权
+  - 索引  
+    rust不支持字符串直接索引, 可以使用 `charts()`/`bytes()`分别获取字符和字节
+    ```rust
+    let s = String::from("jeck");
+    for el in s.charts() {
+      println!("ch: {}", el);
+    }
+    for b in s.bytes() {
+      println!("byte: {}", b);
+    }
+    ```
+- `HashMap`键值对集合  
+  `HashMap`键值使用都会获取所有权
+  ```rust
+  // 导入集合
+  use std::collections::HashMap;
+
+  // 创建空集合
+  // 逐条加入
+  let mut score = HashMap::new();
+  score.insert(String::from("Blue"), 10);
+  score.insert(String::from("Red"), 50);
+
+  // // 从两个vector中收集
+  // let v1 = vec![String::from("Blue"), String::from("Red")];
+  // let v2 = vec![10, 50];
+  // // collect() 方法需要明确返回值类型
+  // let map:HashMap<_,_> = v1.iter().zip(v2.iter()).collect();
+
+  // 获取数据
+  let blue = String::from("Blue");
+  let opt_val:Option<i32> = score.get(&blue);
+
+  // 更新
+  score.insert(String::from("Blue"), 20);   // 覆盖更新
+  let yellow_score = score.entry(String::from("Yellow"))
+      .or_insert(30);                       // 仅首次插入
+  *yellow_score += 100;                     // 解引用后更新
+
+  ```
 

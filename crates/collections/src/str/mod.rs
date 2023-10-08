@@ -13,10 +13,18 @@ pub fn test() {
 /// 
 fn index() {
     println!("\n---> index");
-    let s = String::from("hello");
+    // let _s = String::from("hello नमसत");
     // String不支持直接索引
     // let ch = s[0];
     // println!("ch: {}", ch);
+
+    let s = String::from("jeck");
+    for el in s.chars() {
+      println!("ch: {}", el);
+    }
+    for b in s.bytes() {
+      println!("byte: {}", b);
+    }
 }
 
 ///

@@ -9,6 +9,8 @@ use {collections};
 
 fn main() {
 
-    collections::vec::test();
-    collections::str::test();
+    // collections::vec::test();
+    // collections::str::test();
+    // collections::map::test();
+    collections::task::test();
 }
