@@ -418,3 +418,189 @@
 
   ```
 
+# 错误与恢复
+- `Result<T,E>`  
+  执行逻辑可能导致 `panic` 时, 优先考虑 `Result<T,E>` 将错误告知调用者
+- 匹配不同的错误
+  ```rust
+  let f = File::open("hello.txt");
+  let f = match f {
+      Ok(f) => f,
+      // 模式守卫者
+      // Element(ref data) if condition => {}
+      // condition 为true匹配成功, 否则继续下面的匹配
+      Err(ref error) if error.kind() == ErrorKind::NotFound => {
+          match File::create("hello.txt") {
+              Ok(f) => f,
+              Err(error) => {
+                  panic!("Tried to crated file but there wath a problem:{:?}", error)
+              },
+          }
+      },
+      Err(e) => {
+          panic!("There was a problem opening the file: {:?}", e);
+      }
+  };
+  ```
+- 使用`?`代替 `match Result` 传播错误
+  ```rust
+  pub fn read_file()->Result<String, io::Error> {
+    let mut s = String::new();
+    File::open("hello.txt")?.read_to_string()?;
+    Ok(s)
+  }
+  ```
+- 错误处理指导原则
+  - 有害状态并不包含 预期 会偶尔发生的错误
+  - 之后的代码的运行依赖于处于这种有害状态
+  - 当没有可行的手段来将有害状态信息编码进所使用的类型中的情况
+
+# 泛型/Trait/lifecircle
+- `Generic Type`: 泛型  
+  泛型声明位于具体申明之后  
+  - 结构体  
+    `struct Type<T> {}`
+  - 实现  
+    `impl<T> Type<T> {}`
+  - 方法:  
+    `fn new<T>(value:T) -> Type<T> {}`
+  ```rust
+  // 泛型结构体
+  struct Point<T, U> {
+    x: T,
+    y: U,
+  }
+
+  // 泛型结构体方法
+  // impl<T> Point<T> {}
+  // 泛型类型需要定义再 impl 之后: impl<T>
+  impl<T, U> Point<T, U> {
+
+    // 实例泛型使用
+    pub fn x(&self) -> &T {
+      &self.x
+    }
+
+    // 方法泛型
+    pub fn mixup<V, W>(self, other: Point<V,W>) -> Point<T, W> {
+      Point {
+        x: self.x,
+        y: other.y
+      }
+    }
+
+  }
+  ```
+  - 泛型编译时会展开为`单态模式`
+  ```rust
+  let integer = Some(5);
+  let float = Some(5.0);
+
+  // 展开为
+  enum Option_i32 {
+    Some(i32),
+    None
+  }
+  enum Option_f64 {
+    Some(f64),
+    None
+  }
+  ```
+- `Trait`定义共享行为
+  - 定义
+  ```rust
+  ///
+  /// 可摘要的
+  ///
+  pub trait Summarizable {
+    ///
+    /// 获取摘要
+    ///
+    fn summary(&self) -> String;
+
+    ///
+    /// trait默认实现
+    /// 
+    fn summary_default(&self) -> String {
+      format!("(Read more...)")
+    }
+  }
+  ```
+  - 为`struct`实现`trait`
+  ```rust
+  pub struct NewsArticle {
+      pub headline: String,
+      pub location: String,
+      pub author: String,
+      pub content: String,
+  }
+
+  ///
+  /// 实现Summarizable trait
+  /// 
+  ///
+  impl Summarizable for NewsArticle {
+
+    ///
+    /// summary签名来自 Summarizable
+    /// 
+    fn summary(&self) -> String {
+        format!("{}, by {} {}", self.headline, self.author, self.location)
+    }
+  }
+  ```
+  - `Trait Bounds`特性边界限定  
+    使用`+`限定多个特性
+  ```rust
+  /// 一个trait
+  fn notify<T: Summarizable>(item: T) {}
+
+  /// item 必须同时实现 Summarizable 和 Disable 两个特性
+  fn fmt_news<T: Summarizable + Disable>(item: T) {}
+  ```
+
+  - 对现有`struct`扩展新`trait`  
+    对已有`Tweet`扩展`DisplayPretty`
+  ```rust
+  // tweet_new.rs
+  use super::tweet::Tweet;
+  pub trait DispayPretty {
+    fn summary(&self) -> String {
+      format!("default pretty summary...")
+    }
+  }
+
+  impl DisplayPretty for Tweet {}
+  ```
+  使用
+  ```rust
+  use crate::tweet::Tweet;
+  use crate::tweet_new::DisplayPretty;
+
+  fn test() {
+    let tweet = Tweet {};
+
+    // 限定使用 tweet_new.rs 中实现的方法
+    DisplayPretty::summary(&tweet);
+  }
+  ```
+  - 针对实现了特定`trait`的类型实现特定方法
+  ```rust
+  trait StringLength {
+      fn str_len(&self) -> usize;
+  }
+
+  impl<T: Display> StringLength for T {
+      fn str_len(&self) -> usize {
+          let s = self.to_string();
+          s.len()
+      }
+  }
+
+  fn test() {
+    let str_len = 3.str_len();
+    println!("3 str_len: {}", str_len);
+  }
+  ```
+
+
