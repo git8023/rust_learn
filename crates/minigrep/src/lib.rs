@@ -3,6 +3,7 @@ use std::{env, error::Error, fs::File, io::Read};
 ///
 /// 配置
 ///
+#[derive(Debug)]
 pub struct Config {
     ///
     /// 查询字符串
@@ -58,10 +59,11 @@ impl Config {
 ///
 /// 执行
 ///
-pub fn run(cfg: Config) -> Result<(), Box<dyn Error>> {
+pub fn run(cfg: &Config) -> Result<(), Box<dyn Error>> {
     let mut content = String::new();
-    File::open(cfg.filename)?.read_to_string(&mut content)?;
+    File::open(&cfg.filename)?.read_to_string(&mut content)?;
 
+    println!("[dbg]: {:?}", &cfg);
     let result = if cfg.case_insensitive {
         search_case_insensitive(&cfg.query, &content)
     } else {
