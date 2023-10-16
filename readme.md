@@ -602,5 +602,134 @@
     println!("3 str_len: {}", str_len);
   }
   ```
+- `Life Circle`生命周期  
+  - 函数参数/返回值
+  ```rust
+  ///
+  /// 泛型 'a 为生命周期标记
+  /// 
+  /// 参数a类型: &str
+  /// 参数b类型: &str
+  /// 返回值: &str
+  /// 
+  /// 参数a/b/返回值具有相同生命周期
+  /// 
+  fn largest<'a>(a:&'a str, b:&'b str) -> &'a str;
 
+  ///
+  /// 泛型+生命周期
+  /// 
+  /// 参数a: &str
+  /// 参数b: &str
+  /// 参数c: T
+  /// 
+  /// 参数a/b/返回值具有相同生命周期
+  /// 
+  /// 参数c必须实现Display trait
+  /// 
+  fn longest<'a, T>(a:&'a str, b:&'a str, c:T) -> &'a str
+  where
+    T: Display;
+  ```
+  - 结构体  
+    结构体中如果有引用字段, 必须注明字段生命周期注解.  
+    声明: `struct StructName<'a, 'b> {}`.  
+    实现: `impl<'a'> StructName<'a'> {}`.
+  ```rust
+  #[derive(Debug)]
+  struct ImporantExcerpt<'a> {
+    ///
+    /// part引用不能小于ImportantExcerpt示例
+    /// 
+    part: &'a str,
+  }
 
+  impl<'a> ImportantExcerpt<'a> {
+    pub fn part(&mut self, part:&'a &str) -> &mut Self {
+      self.part = part;
+      self
+    }
+  }
+
+  fn test() {
+    let s = String::from("Call me Ishmeal. Some years ago...");
+    let part = s.split(".").next().expect("Could not find a '.'");
+    let ie = ImportantExcerpt {
+      part
+    };
+    println!("ie. {:?}", ie);
+  }
+  ```
+  - 默认生命周期规则  
+    1. 每一个是引用的参数都有它自己的生命周期参数
+    2. 如果只有一个输入生命周期参数，那么它被赋予所有输出生命周期参数
+    3. 如果方法有多个输入生命周期参数，不过其中之一因为方法的缘故为`&self`或`&mut self`, 那么`self`的生命周期被赋给所有输出生命周期参数
+
+# 测试
+- 测试模块
+  ```rust
+  ///
+  /// 测试模块需要添加测试标记
+  /// 
+  /// #[cfg(test)]
+  /// 
+  #[cfg(test)]
+  mod tests {
+
+    ///
+    /// 测试入口方法
+    /// 
+    /// #[test]
+    /// 
+    #[test]
+    fn it_works() {
+
+      // 断言宏
+      assert!(2+2,4);
+    }
+
+  }
+  ```
+  - 常用断言宏
+  ```rust
+  ///
+  /// 接受bool值
+  /// 
+  /// tipsFmt:
+  ///   - 字符串/格式字符串, 交由 format! 处理
+  ///   - 可选
+  ///   - 测试失败时打印的提示消息
+  ///  
+  /// fmtVals:
+  ///   - traits: Display
+  ///   - 可选
+  ///   - tipsFmt占位符实际值
+  /// 
+  assert!(bool, tipsFmt?, fmtVals?);
+
+  ///
+  /// 接受两个参数 a,b
+  /// 所有参数都必须实现 PartialEq, Debug 两个trait
+  /// 
+  /// tipsFmt:
+  ///   - 字符串/格式字符串, 交由 format! 处理
+  ///   - 可选
+  ///   - 测试失败时打印的提示消息
+  ///  
+  /// fmtVals:
+  ///   - traits: Display
+  ///   - 可选
+  ///   - tipsFmt占位符实际值
+  /// 
+  assert_eq!(a, b, tipsFmt?, fmtVals);
+  ```
+
+  | 接口 | 类型 | 参数 | 说明 | 示例 |
+  |--|--|--|--|--|
+  | test | `Attribute` | - | 标记为测试模块<br>标记为测试方法入口 | `#[cfg(test)]`<br>`#[test]` |
+  | should_panic | `Attribute` | - 可选, 消息全量匹配 <br>- expected: 可选, 消息包含匹配 | 标记为目标测试方法必须`panic`否则失败, 需与`#[test]`联合使用 | `#[should_panic]`<br>`#[should_panic="full_err_msg"]`<br> `#[should_panic(expected="container_err_msg")]`|
+  | ignore | `Attribute` | - | 排除指定测试方法 | `#[ignore]` |
+  | assert | `Macro` | - c: `bool`测试条件 <br>- sof: 可选, 消息或格式化消息 <br>- fv: 可选, 格式消息替换值 | 断言条件是否为`true` | `assert!(false, "失败了, {}", "测试条件");` |
+  | assert_eq | `Macro` | - lv: `expr`左值表达式 <br>- rv: `expr`右值表达式 <br>- sof: 可选, 消息或格式化消息 <br>- fv: 可选, 格式消息替换值 | 断言两个值是否相等<br>所有参数必须实现`PartialEq`和`Debug` | `assert!(false, "失败了, {}", "测试条件");` |
+  | assert_ne | `Macro` | - lv: `expr`左值表达式 <br>- rv: `expr`右值表达式 <br>- sof: 可选, 消息或格式化消息 <br>- fv: 可选, 格式消息替换值 | 断言两个值是否不相等<br>所有参数必须实现`PartialEq`和`Debug` | `assert!(false, "失败了, {}", "测试条件");` |
+  

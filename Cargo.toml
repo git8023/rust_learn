@@ -6,9 +6,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["crates/collections", "crates/errors", "crates/gtl"]
+members = [
+    "crates/collections",
+    "crates/errors",
+    "crates/gtl",
+    "crates/tests_demo",
+    "crates/minigrep",
+]
 
 [dependencies]
 collections = { path = 'crates/collections' }
 errors = { path = 'crates/errors' }
 gtl = { path = 'crates/gtl' }
+tests_demo = { path = 'crates/tests_demo' }
+minigrep = { path = 'crates/minigrep' }
